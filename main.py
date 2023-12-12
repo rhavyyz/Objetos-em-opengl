@@ -1,8 +1,6 @@
 import pygame
 from pygame.locals import *
-from src.storage_funcs import get_stored_values, set_stored_values
-
-from time import sleep
+from src.storage_funcs import get_stored_values, set_stored_values, get_n_on_storage
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -10,7 +8,7 @@ from src.line_sequence import LineSequence
 
 
 
-verticies, edges = get_stored_values()
+verticies, edges = get_stored_values("5")
 
 
 def Figure(verticies, edges):
@@ -20,6 +18,7 @@ def Figure(verticies, edges):
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
+            # print("\n\n\n", vertex,"\n\n" ,edge, verticies)
             glVertex3fv(verticies[vertex])
     glEnd()
 
@@ -38,7 +37,7 @@ def StaticFigure():
 def main():
     pygame.init()
     display = (800,600)
-    win = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
+    pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
     gluPerspective(45, (display[0]/display[1]),
 0.1, 50.0)
@@ -57,24 +56,23 @@ def main():
                 pygame.quit()
                 quit()
 
+            if event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
+                line_sequence = LineSequence(800, 600)
+            elif event.type == pygame.KEYDOWN and event.key == K_z:
+                line_sequence.remove_last()
+
+
             leftclick, middleclick, rightclick = pygame.mouse.get_pressed()
 
-            if event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
+            if event.type == pygame.MOUSEBUTTONDOWN and middleclick:
                 vertex, lines = line_sequence.get_vals() 
-                
                 if(len(vertex) > 1 and len(lines) > 0):
+                    set_stored_values(vertex, lines, str(get_n_on_storage()))
 
-                    salvando = pygame.font.SysFont('timesnewroman', 30).render("Salvando", False, (255, 255, 255))
-
-                    win.blit(salvando,( 0, 0))
-
-                    set_stored_values(vertex, lines)
-
-                    sleep(1)
+                    line_sequence = LineSequence(800, 600)
 
 
-
-            if event.type == pygame.MOUSEBUTTONDOWN and rightclick:
+            elif event.type == pygame.MOUSEBUTTONDOWN and rightclick:
                 new_sequence = True
             
             elif event.type == pygame.MOUSEBUTTONDOWN and leftclick:
@@ -86,9 +84,9 @@ def main():
         
         vertex, lines = line_sequence.get_vals() 
         
-        print(vertex, lines)
-        # StaticFigure()
-        Figure(vertex, lines)
+        # print(vertex, lines)
+        StaticFigure()
+        # Figure(vertex, lines)
         pygame.display.flip()
         pygame.time.wait(10)
 

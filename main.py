@@ -8,7 +8,7 @@ from src.line_sequence import LineSequence
 
 
 
-verticies, edges = get_stored_values("5")
+verticies, edges = get_stored_values("data")
 
 
 def Figure(verticies, edges):
@@ -85,8 +85,8 @@ def main():
         vertex, lines = line_sequence.get_vals() 
         
         # print(vertex, lines)
-        StaticFigure()
-        # Figure(vertex, lines)
+        # StaticFigure()
+        Figure(vertex, lines)
         pygame.display.flip()
         pygame.time.wait(10)
 
